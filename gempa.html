@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMPA.ID • Info Terkini BMKG & Peta Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e1b4b; }
+        .card-pulse { animation: shadow-pulse 2s infinite; }
+        @keyframes shadow-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        /* Style untuk container peta */
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 2rem;
+            margin-bottom: 2rem;
+            border: 4px solid white;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            z-index: 10; /* Agar di atas background */
+        }
+    </style>
+</head>
+<body class="pb-32">
+    <nav class="p-6 bg-white border-b border-slate-100 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
+        <div class="container mx-auto flex justify-between items-center max-w-6xl">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-red-200">
+                    <i class="fas fa-house-damage text-xs"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tighter text-slate-800">GEMPA<span class="text-red-600">.ID</span></span>
+            </div>
+            <div class="px-4 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold border border-red-100 font-mono animate-pulse">LIVE BMKG</div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 mt-10 max-w-6xl">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1">
+                <div id="loader" class="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-xl">
+                    <i class="fas fa-circle-notch fa-spin text-3xl text-red-500 mb-4"></i>
+                    <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">Menghubungkan ke BMKG...</p>
+                </div>
+
+                <div id="latestGempa" class="hidden">
+                    <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl relative overflow-hidden mb-8 card-pulse">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                                <span class="text-sm font-bold text-slate-500 uppercase font-mono" id="gTime">--:--</span>
+                                <div class="w-16 h-16 bg-red-600 text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-red-200">
+                                    <span class="text-3xl font-black leading-none" id="gMag">0.0</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest">SR</span>
+                                </div>
+                            </div>
+                            
+                            <h1 class="text-2xl font-extrabold text-slate-900 mb-3 leading-tight" id="gWilayah">Memuat Lokasi...</h1>
+                            <p class="text-slate-600 text-sm mb-6 flex items-center gap-2 font-medium">
+                                <i class="fas fa-map-marker-alt text-red-500"></i> Kedalaman <span id="gDalam">0</span> km • <span id="gPotensi" class="font-bold text-red-600">--</span>
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">Koordinat</p>
+                                    <p class="text-xs font-bold text-slate-700 font-mono" id="gKoord">--</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">Dirasakan</p>
+                                    <p class="text-xs font-bold text-slate-700 leading-relaxed" id="gDirasakan">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div id="map"></div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg flex items-center gap-4">
+                    <div class="w-5 h-5 bg-red-600 rounded-full card-pulse flex items-center justify-center text-white text-xs">
+                        <i class="fas fa-bullseye text-[8px]"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">Pusat Gempa (Episentrum)</p>
+                        <p class="text-[10px] text-slate-500 font-medium">Kekuatan gempa dan potensi tsunami tertera di kartu detail.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
+        <a href="libur.html" class="flex flex-col items-center text-slate-300 hover:text-purple-600 transition-colors">
+            <i class="fas fa-calendar-day text-xl"></i>
+            <span class="text-[10px] font-bold mt-1.5 uppercase">Libur</span>
+        </a>
+        <a href="cuaca.html" class="flex flex-col items-center text-slate-300 hover:text-blue-600 transition-colors">
+            <i class="fas fa-cloud-sun text-xl"></i>
+            <span class="text-[10px] font-bold mt-1.5 uppercase">Cuaca</span>
+        </a>
+        <a href="#" class="flex flex-col items-center text-red-600 hover:text-red-700 transition-colors">
+            <i class="fas fa-house-damage text-xl"></i>
+            <span class="text-[10px] font-bold mt-1.5 uppercase">Gempa</span>
+        </a>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        // Inisialisasi Peta (Default ke koordinat Indonesia)
+        const map = L.map('map').setView([-2.5, 118], 5); // Zoom 5 untuk melihat seluruh Indo
+
+        // Tambahkan Tile Layer (Tampilan Peta) - Menggunakan CartoDB Positron (lebih bersih/soft)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        async function getGempa() {
+            try {
+                // Ambil data gempa terbaru (M 5.0+) dari BMKG
+                const res = await fetch('https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json');
+                const data = await res.json();
+                const g = data.Infogempa.gempa;
+
+                // Tampilkan Data Teks
+                document.getElementById('gTime').innerText = `${g.Tanggal} | ${g.Jam}`;
+                document.getElementById('gMag').innerText = g.Magnitude;
+                document.getElementById('gWilayah').innerText = g.Wilayah;
+                document.getElementById('gDalam').innerText = g.Kedalaman;
+                document.getElementById('gPotensi').innerText = g.Potensi;
+                document.getElementById('gKoord').innerText = g.Coordinates;
+                document.getElementById('gDirasakan').innerText = g.Dirasakan || "Tidak Dirasakan / Data Belum Tersedia";
+
+                // LOGIKA PETA:
+                // Koordinat BMKG berbentuk "LS,BT" (contoh: "-6.20,106.81")
+                const coordsArray = g.Coordinates.split(',');
+                const lat = parseFloat(coordsArray[0]);
+                const lng = parseFloat(coordsArray[1]);
+
+                // 1. Pindahkan kamera peta ke titik koordinat gempa
+                map.setView([lat, lng], 8); // Zoom ke level 8 agar lokasi lebih jelas
+
+                // 2. Tambahkan Marker Lingkaran Merah yang berdenyut di Titik Episentrum
+                const redIcon = L.divIcon({
+                    className: 'relative',
+                    html: '<div class="card-pulse w-6 h-6 bg-red-600/80 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] shadow-xl"><i class="fas fa-bullseye"></i></div>',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12] // Titik pusat ikon
+                });
+
+                L.marker([lat, lng], {icon: redIcon})
+                    .addTo(map)
+                    .bindPopup(`<b>M ${g.Magnitude} SR</b><br>${g.Wilayah}`)
+                    .openPopup(); // Buka popup otomatis
+
+                // Sembunyikan loader, tampilkan konten
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('latestGempa').classList.remove('hidden');
+            } catch (e) {
+                console.error("Gagal ambil data BMKG", e);
+                document.getElementById('loader').innerHTML = `<p class="text-red-500 font-bold">Gagal mengambil data BMKG.</p>`;
+            }
+        }
+
+        getGempa();
+    </script>
+</body>
+</html>
