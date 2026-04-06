@@ -1,55 +1,93 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIBUR.ID • Kalender & Inspirasi Bangsa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e1b4b; }
-        .quote-card { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); transition: all 0.5s ease; }
-        .holiday-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .holiday-card:hover { transform: translateY(-5px); }
-        .music-pulse { animation: music-pulse 2s infinite; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #1e1b4b;
+        }
+
+        .quote-card {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            transition: all 0.5s ease;
+        }
+
+        .holiday-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .holiday-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .music-pulse {
+            animation: music-pulse 2s infinite;
+        }
+
         @keyframes music-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(79, 70, 229, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(79, 70, 229, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+            }
         }
     </style>
 </head>
+
 <body class="pb-32">
 
     <audio id="indoRaya" loop>
-        <source src="https://github.com/KurniawanSatria/SapaID/raw/refs/heads/main/Indonesia%20Raya%20-%20Instrumental.mp3" type="audio/mpeg">
+        <source
+            src="https://github.com/KurniawanSatria/SapaID/raw/refs/heads/main/Indonesia%20Raya%20-%20Instrumental.mp3"
+            type="audio/mpeg">
     </audio>
 
     <nav class="p-6 bg-white border-b border-slate-100 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
         <div class="container mx-auto flex justify-between items-center max-w-6xl">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                <div
+                    class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-100">
                     <i class="fas fa-flag text-xs"></i>
                 </div>
-                <span class="text-xl font-extrabold tracking-tighter text-slate-800">LIBUR<span class="text-indigo-600">.ID</span></span>
+                <span class="text-xl font-extrabold tracking-tighter text-slate-800">LIBUR<span
+                        class="text-indigo-600">.ID</span></span>
             </div>
-            <div id="clock" class="px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold border border-indigo-100 font-mono">00:00:00</div>
+            <div id="clock"
+                class="px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold border border-indigo-100 font-mono">
+                00:00:00</div>
         </div>
     </nav>
 
     <div class="container mx-auto px-6 mt-10 max-w-6xl">
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            
+
             <div class="lg:col-span-1">
-                <div class="quote-card rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden h-full flex flex-col justify-between">
+                <div
+                    class="quote-card rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden h-full flex flex-col justify-between">
                     <i class="fas fa-quote-left absolute -top-4 -left-2 text-white/10 text-9xl"></i>
                     <div class="relative z-10">
-                        <p id="quoteText" class="text-xl font-medium leading-relaxed italic mb-6">"Bangsa yang besar adalah bangsa yang menghormati jasa pahlawannya."</p>
+                        <p id="quoteText" class="text-xl font-medium leading-relaxed italic mb-6">"Bangsa yang besar
+                            adalah bangsa yang menghormati jasa pahlawannya."</p>
                     </div>
                     <div class="relative z-10 border-t border-white/20 pt-4">
-                        <p id="quoteAuthor" class="text-xs font-black uppercase tracking-[0.2em] opacity-80">Soekarno</p>
+                        <p id="quoteAuthor" class="text-xs font-black uppercase tracking-[0.2em] opacity-80">Soekarno
+                        </p>
                     </div>
                 </div>
             </div>
@@ -60,29 +98,35 @@
                         Mari Rehat, <span class="text-indigo-600">Esok Berjuang Lagi.</span>
                     </h1>
                     <div id="todayStatus" class="flex items-center gap-3">
-                        </div>
+                    </div>
                 </div>
 
                 <div class="flex gap-2 overflow-x-auto pb-2">
-                    <button id="btn-mendatang" onclick="filterAction('mendatang')" class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm border border-slate-100">MENDATANG</button>
-                    <button id="btn-nasional" onclick="filterAction('nasional')" class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-slate-400 border border-slate-100">NASIONAL</button>
-                    <button id="btn-all" onclick="filterAction('all')" class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-slate-400 border border-slate-100">SEMUA</button>
+                    <button id="btn-mendatang" onclick="filterAction('mendatang')"
+                        class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm border border-slate-100">MENDATANG</button>
+                    <button id="btn-nasional" onclick="filterAction('nasional')"
+                        class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-slate-400 border border-slate-100">NASIONAL</button>
+                    <button id="btn-all" onclick="filterAction('all')"
+                        class="filter-btn whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all bg-white text-slate-400 border border-slate-100">SEMUA</button>
                 </div>
             </div>
         </div>
 
         <div id="holidayGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            </div>
+        </div>
     </div>
 
-    <div class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
-        <button onclick="toggleAudio()" class="music-pulse w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white">
+    <div
+        class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
+        <button onclick="toggleAudio()"
+            class="music-pulse w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white">
             <i id="musicIcon" class="fas fa-play text-xs"></i>
         </button>
         <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Instrumental</span>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
         <a href="#" class="flex flex-col items-center text-indigo-600">
             <i class="fas fa-calendar-day text-xl"></i>
             <span class="text-[10px] font-bold mt-1.5 uppercase tracking-tighter">Libur</span>
@@ -96,6 +140,22 @@
             <span class="text-[10px] font-bold mt-1.5 uppercase tracking-tighter">Gempa</span>
         </a>
     </div>
+    <audio id="indoRaya" loop>
+        <source src="Indonesia Raya - Instrumental.mp3" type="audio/mpeg">
+    </audio>
+
+    <div
+        class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
+        <button onclick="toggleAudio()" id="btnAudio"
+            class="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shadow-lg shadow-slate-200">
+            <i id="musicIcon" class="fas fa-play text-xs"></i>
+        </button>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Backsound</span>
+            <span class="text-[10px] font-bold text-slate-700 leading-none">Indonesia Raya</span>
+        </div>
+    </div>
 
     <script>
         // Logika JS tetap sama namun dengan penyesuaian render HTML
@@ -108,7 +168,7 @@
         ];
 
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
         setInterval(updateClock, 1000);
 
@@ -129,13 +189,13 @@
                 const res = await fetch('https://api-harilibur.netlify.app/api?year=2026');
                 allData = await res.json();
                 allData.sort((a, b) => a.holiday_date.localeCompare(b.holiday_date));
-                
+
                 const q = quotes[Math.floor(Math.random() * quotes.length)];
                 document.getElementById('quoteText').innerText = `"${q.text}"`;
                 document.getElementById('quoteAuthor').innerText = q.author;
 
                 renderTodayStatus();
-                filterAction('mendatang'); 
+                filterAction('mendatang');
             } catch (err) {
                 document.getElementById('holidayGrid').innerHTML = `<p class="col-span-full text-center text-red-500">Gagal mengambil data.</p>`;
             }
@@ -174,8 +234,8 @@
 
         function renderHolidays(data) {
             const grid = document.getElementById('holidayGrid');
-            const sekarang = new Date().setHours(0,0,0,0);
-            
+            const sekarang = new Date().setHours(0, 0, 0, 0);
+
             grid.innerHTML = data.map(h => {
                 const hDate = new Date(h.holiday_date);
                 const isPast = hDate.getTime() < sekarang;
@@ -201,4 +261,5 @@
         window.onload = fetchData;
     </script>
 </body>
+
 </html>

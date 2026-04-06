@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEMPA.ID • Info Terkini BMKG & Peta Interaktif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e1b4b; }
-        .card-pulse { animation: shadow-pulse 2s infinite; }
-        @keyframes shadow-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #1e1b4b;
         }
+
+        .card-pulse {
+            animation: shadow-pulse 2s infinite;
+        }
+
+        @keyframes shadow-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
         /* Style untuk container peta */
         #map {
             height: 300px;
@@ -28,26 +46,32 @@
             margin-bottom: 2rem;
             border: 4px solid white;
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            z-index: 10; /* Agar di atas background */
+            z-index: 10;
+            /* Agar di atas background */
         }
     </style>
 </head>
+
 <body class="pb-32">
     <nav class="p-6 bg-white border-b border-slate-100 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
         <div class="container mx-auto flex justify-between items-center max-w-6xl">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-red-200">
+                <div
+                    class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-red-200">
                     <i class="fas fa-house-damage text-xs"></i>
                 </div>
-                <span class="text-xl font-extrabold tracking-tighter text-slate-800">GEMPA<span class="text-red-600">.ID</span></span>
+                <span class="text-xl font-extrabold tracking-tighter text-slate-800">GEMPA<span
+                        class="text-red-600">.ID</span></span>
             </div>
-            <div class="px-4 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold border border-red-100 font-mono animate-pulse">LIVE BMKG</div>
+            <div
+                class="px-4 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold border border-red-100 font-mono animate-pulse">
+                LIVE BMKG</div>
         </div>
     </nav>
 
     <div class="container mx-auto px-6 mt-10 max-w-6xl">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             <div class="lg:col-span-1">
                 <div id="loader" class="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-xl">
                     <i class="fas fa-circle-notch fa-spin text-3xl text-red-500 mb-4"></i>
@@ -55,28 +79,35 @@
                 </div>
 
                 <div id="latestGempa" class="hidden">
-                    <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl relative overflow-hidden mb-8 card-pulse">
+                    <div
+                        class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl relative overflow-hidden mb-8 card-pulse">
                         <div class="relative z-10">
                             <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                                <span class="text-sm font-bold text-slate-500 uppercase font-mono" id="gTime">--:--</span>
-                                <div class="w-16 h-16 bg-red-600 text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-red-200">
+                                <span class="text-sm font-bold text-slate-500 uppercase font-mono"
+                                    id="gTime">--:--</span>
+                                <div
+                                    class="w-16 h-16 bg-red-600 text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-red-200">
                                     <span class="text-3xl font-black leading-none" id="gMag">0.0</span>
                                     <span class="text-[9px] font-bold uppercase tracking-widest">SR</span>
                                 </div>
                             </div>
-                            
-                            <h1 class="text-2xl font-extrabold text-slate-900 mb-3 leading-tight" id="gWilayah">Memuat Lokasi...</h1>
+
+                            <h1 class="text-2xl font-extrabold text-slate-900 mb-3 leading-tight" id="gWilayah">Memuat
+                                Lokasi...</h1>
                             <p class="text-slate-600 text-sm mb-6 flex items-center gap-2 font-medium">
-                                <i class="fas fa-map-marker-alt text-red-500"></i> Kedalaman <span id="gDalam">0</span> km • <span id="gPotensi" class="font-bold text-red-600">--</span>
+                                <i class="fas fa-map-marker-alt text-red-500"></i> Kedalaman <span id="gDalam">0</span>
+                                km • <span id="gPotensi" class="font-bold text-red-600">--</span>
                             </p>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">Koordinat</p>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">
+                                        Koordinat</p>
                                     <p class="text-xs font-bold text-slate-700 font-mono" id="gKoord">--</p>
                                 </div>
                                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">Dirasakan</p>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">
+                                        Dirasakan</p>
                                     <p class="text-xs font-bold text-slate-700 leading-relaxed" id="gDirasakan">--</p>
                                 </div>
                             </div>
@@ -88,12 +119,14 @@
             <div class="lg:col-span-2">
                 <div id="map"></div>
                 <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg flex items-center gap-4">
-                    <div class="w-5 h-5 bg-red-600 rounded-full card-pulse flex items-center justify-center text-white text-xs">
+                    <div
+                        class="w-5 h-5 bg-red-600 rounded-full card-pulse flex items-center justify-center text-white text-xs">
                         <i class="fas fa-bullseye text-[8px]"></i>
                     </div>
                     <div>
                         <p class="text-xs font-bold text-slate-800">Pusat Gempa (Episentrum)</p>
-                        <p class="text-[10px] text-slate-500 font-medium">Kekuatan gempa dan potensi tsunami tertera di kartu detail.</p>
+                        <p class="text-[10px] text-slate-500 font-medium">Kekuatan gempa dan potensi tsunami tertera di
+                            kartu detail.</p>
                     </div>
                 </div>
             </div>
@@ -101,7 +134,8 @@
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
         <a href="libur.html" class="flex flex-col items-center text-slate-300 hover:text-purple-600 transition-colors">
             <i class="fas fa-calendar-day text-xl"></i>
             <span class="text-[10px] font-bold mt-1.5 uppercase">Libur</span>
@@ -115,12 +149,44 @@
             <span class="text-[10px] font-bold mt-1.5 uppercase">Gempa</span>
         </a>
     </div>
+    <audio id="indoRaya" loop>
+        <source src="Indonesia Raya - Instrumental.mp3" type="audio/mpeg">
+    </audio>
 
+    <div
+        class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
+        <button onclick="toggleAudio()" id="btnAudio"
+            class="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shadow-lg shadow-slate-200">
+            <i id="musicIcon" class="fas fa-play text-xs"></i>
+        </button>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Backsound</span>
+            <span class="text-[10px] font-bold text-slate-700 leading-none">Indonesia Raya</span>
+        </div>
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
+        function toggleAudio() {
+            const audio = document.getElementById('indoRaya');
+            const icon = document.getElementById('musicIcon');
+            const btn = document.getElementById('btnAudio');
+
+            if (audio.paused) {
+                audio.play().catch(err => {
+                    console.log("Autoplay diblokir browser. Klik tombol manual.");
+                    alert("Klik OK untuk memutar musik!");
+                });
+                icon.className = "fas fa-pause text-xs";
+                btn.classList.add('animate-pulse'); // Tambah efek denyut saat bunyi
+            } else {
+                audio.pause();
+                icon.className = "fas fa-play text-xs";
+                btn.classList.remove('animate-pulse');
+            }
+        }
         // Inisialisasi Peta (Default ke koordinat Indonesia)
         const map = L.map('map').setView([-2.5, 118], 5); // Zoom 5 untuk melihat seluruh Indo
 
@@ -164,7 +230,7 @@
                     iconAnchor: [12, 12] // Titik pusat ikon
                 });
 
-                L.marker([lat, lng], {icon: redIcon})
+                L.marker([lat, lng], { icon: redIcon })
                     .addTo(map)
                     .bindPopup(`<b>M ${g.Magnitude} SR</b><br>${g.Wilayah}`)
                     .openPopup(); // Buka popup otomatis
@@ -181,4 +247,5 @@
         getGempa();
     </script>
 </body>
+
 </html>

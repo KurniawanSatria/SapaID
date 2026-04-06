@@ -146,8 +146,42 @@
             </div>
         </div>
     </div>
+    <audio id="indoRaya" loop>
+        <source src="Indonesia Raya - Instrumental.mp3" type="audio/mpeg">
+    </audio>
+
+    <div
+        class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
+        <button onclick="toggleAudio()" id="btnAudio"
+            class="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shadow-lg shadow-slate-200">
+            <i id="musicIcon" class="fas fa-play text-xs"></i>
+        </button>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Backsound</span>
+            <span class="text-[10px] font-bold text-slate-700 leading-none">Indonesia Raya</span>
+        </div>
+    </div>
 </footer>
     <script>
+         function toggleAudio() {
+            const audio = document.getElementById('indoRaya');
+            const icon = document.getElementById('musicIcon');
+            const btn = document.getElementById('btnAudio');
+
+            if (audio.paused) {
+                audio.play().catch(err => {
+                    console.log("Autoplay diblokir browser. Klik tombol manual.");
+                    alert("Klik OK untuk memutar musik!");
+                });
+                icon.className = "fas fa-pause text-xs";
+                btn.classList.add('animate-pulse'); // Tambah efek denyut saat bunyi
+            } else {
+                audio.pause();
+                icon.className = "fas fa-play text-xs";
+                btn.classList.remove('animate-pulse');
+            }
+        }
         // Set Tanggal Hari Ini
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById('dateNow').innerText = new Date().toLocaleDateString('id-ID', options);

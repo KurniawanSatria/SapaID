@@ -1,48 +1,89 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CUACA.ID • Prakiraan Cuaca Indonesia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e1b4b; }
-        .weather-gradient { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
-        .glass-select { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border: 1px solid #e2e8f0; }
-        select { appearance: none; cursor: pointer; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .float-img { animation: float 4s ease-in-out infinite; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #1e1b4b;
+        }
+
+        .weather-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .glass-select {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #e2e8f0;
+        }
+
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .float-img {
+            animation: float 4s ease-in-out infinite;
+        }
     </style>
 </head>
+
 <body class="pb-32">
 
     <nav class="p-6 bg-white border-b border-slate-100 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
         <div class="container mx-auto flex justify-between items-center max-w-6xl">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                <div
+                    class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-100">
                     <i class="fas fa-cloud text-xs"></i>
                 </div>
-                <span class="text-xl font-extrabold tracking-tighter text-slate-800">CUACA<span class="text-blue-600">.ID</span></span>
+                <span class="text-xl font-extrabold tracking-tighter text-slate-800">CUACA<span
+                        class="text-blue-600">.ID</span></span>
             </div>
-            <div id="clock" class="px-4 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100 font-mono">00:00:00</div>
+            <div id="clock"
+                class="px-4 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100 font-mono">
+                00:00:00</div>
         </div>
     </nav>
 
     <div class="container mx-auto px-6 mt-10 max-w-6xl">
-        
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-            <select id="prov" onchange="loadRegencies(this.value)" class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="prov" onchange="loadRegencies(this.value)"
+                class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">PROVINSI</option>
             </select>
-            <select id="kota" onchange="loadDistricts(this.value)" disabled class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
+            <select id="kota" onchange="loadDistricts(this.value)" disabled
+                class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
                 <option value="">KOTA/KAB</option>
             </select>
-            <select id="kec" onchange="loadVillages(this.value)" disabled class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
+            <select id="kec" onchange="loadVillages(this.value)" disabled
+                class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
                 <option value="">KECAMATAN</option>
             </select>
-            <select id="desa" onchange="fetchWeather(this.value)" disabled class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
+            <select id="desa" onchange="fetchWeather(this.value)" disabled
+                class="glass-select p-3 rounded-2xl text-xs font-bold text-slate-600 outline-none disabled:opacity-50">
                 <option value="">DESA/KEL</option>
             </select>
         </div>
@@ -53,15 +94,18 @@
         </div>
 
         <div id="weatherContent" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             <div class="lg:col-span-1">
-                <div class="weather-gradient rounded-[2.5rem] p-8 text-white shadow-2xl shadow-blue-100 relative overflow-hidden h-full flex flex-col justify-between">
+                <div
+                    class="weather-gradient rounded-[2.5rem] p-8 text-white shadow-2xl shadow-blue-100 relative overflow-hidden h-full flex flex-col justify-between">
                     <div class="relative z-10">
                         <div class="flex justify-between items-start mb-8">
-                            <span id="wTimeLabel" class="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold tracking-widest uppercase">Memuat...</span>
+                            <span id="wTimeLabel"
+                                class="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold tracking-widest uppercase">Memuat...</span>
                             <i class="fas fa-ellipsis-h opacity-50"></i>
                         </div>
-                        <h2 id="displayLoc" class="text-3xl font-black leading-tight mb-2 uppercase tracking-tighter">Pilih Lokasi</h2>
+                        <h2 id="displayLoc" class="text-3xl font-black leading-tight mb-2 uppercase tracking-tighter">
+                            Pilih Lokasi</h2>
                         <div class="flex items-center gap-2">
                             <span id="wTemp" class="text-8xl font-black tracking-tighter">--</span>
                             <span class="text-3xl font-light opacity-70 mt-[-2rem]">°C</span>
@@ -69,7 +113,7 @@
                         <p id="wDesc" class="text-xl font-bold opacity-90 mt-2">--</p>
                     </div>
                     <div id="wIconContainer" class="relative z-10 flex justify-center py-6">
-                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -82,8 +126,10 @@
                     </div>
                     <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
                         <i class="fas fa-wind text-blue-500 mb-4 text-2xl"></i>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Kecepatan Angin</p>
-                        <p id="wWind" class="text-3xl font-black text-slate-800">-- <small class="text-sm">km/h</small></p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Kecepatan Angin
+                        </p>
+                        <p id="wWind" class="text-3xl font-black text-slate-800">-- <small class="text-sm">km/h</small>
+                        </p>
                     </div>
                     <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
                         <i class="fas fa-cloud text-blue-500 mb-4 text-2xl"></i>
@@ -92,23 +138,26 @@
                     </div>
                     <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
                         <i class="fas fa-eye text-blue-500 mb-4 text-2xl"></i>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Jarak Pandang</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Jarak Pandang
+                        </p>
                         <p id="wVis" class="text-3xl font-black text-slate-800">--</p>
                     </div>
                 </div>
-                
+
                 <div class="bg-blue-600 p-6 rounded-3xl text-white flex items-center gap-4 shadow-lg shadow-blue-100">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                         <i class="fas fa-info-circle"></i>
                     </div>
-                    <p class="text-xs font-medium leading-relaxed">Data diperbarui secara real-time dari server BMKG Indonesia untuk tingkat akurasi kelurahan.</p>
+                    <p class="text-xs font-medium leading-relaxed">Data diperbarui secara real-time dari server BMKG
+                        Indonesia untuk tingkat akurasi kelurahan.</p>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-2xl md:max-w-xl">
         <a href="libur.html" class="flex flex-col items-center text-slate-300 hover:text-indigo-600 transition-colors">
             <i class="fas fa-calendar-day text-xl"></i>
             <span class="text-[10px] font-bold mt-1.5 uppercase tracking-tighter">Libur</span>
@@ -122,12 +171,45 @@
             <span class="text-[10px] font-bold mt-1.5 uppercase tracking-tighter">Gempa</span>
         </a>
     </div>
+    <audio id="indoRaya" loop>
+        <source src="Indonesia Raya - Instrumental.mp3" type="audio/mpeg">
+    </audio>
 
+    <div
+        class="fixed bottom-24 left-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2 pr-5 rounded-full border border-slate-100 shadow-2xl">
+        <button onclick="toggleAudio()" id="btnAudio"
+            class="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shadow-lg shadow-slate-200">
+            <i id="musicIcon" class="fas fa-play text-xs"></i>
+        </button>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Backsound</span>
+            <span class="text-[10px] font-bold text-slate-700 leading-none">Indonesia Raya</span>
+        </div>
+    </div>
     <script>
+        function toggleAudio() {
+            const audio = document.getElementById('indoRaya');
+            const icon = document.getElementById('musicIcon');
+            const btn = document.getElementById('btnAudio');
+
+            if (audio.paused) {
+                audio.play().catch(err => {
+                    console.log("Autoplay diblokir browser. Klik tombol manual.");
+                    alert("Klik OK untuk memutar musik!");
+                });
+                icon.className = "fas fa-pause text-xs";
+                btn.classList.add('animate-pulse'); // Tambah efek denyut saat bunyi
+            } else {
+                audio.pause();
+                icon.className = "fas fa-play text-xs";
+                btn.classList.remove('animate-pulse');
+            }
+        }
         const REGION_API = 'https://api.cors.lol/?url=https://api-wilayah-indonesia/api';
 
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
         setInterval(updateClock, 1000);
 
@@ -141,7 +223,7 @@
 
         async function loadRegencies(id) {
             reset(['kota', 'kec', 'desa']);
-            if(!id) return;
+            if (!id) return;
             const res = await fetch(`${REGION_API}/regencies/${id}.json`);
             const data = await res.json();
             fill('kota', data);
@@ -149,7 +231,7 @@
 
         async function loadDistricts(id) {
             reset(['kec', 'desa']);
-            if(!id) return;
+            if (!id) return;
             const res = await fetch(`${REGION_API}/districts/${id}.json`);
             const data = await res.json();
             fill('kec', data);
@@ -157,7 +239,7 @@
 
         async function loadVillages(id) {
             reset(['desa']);
-            if(!id) return;
+            if (!id) return;
             const res = await fetch(`${REGION_API}/villages/${id}.json`);
             const data = await res.json();
             fill('desa', data);
@@ -179,8 +261,8 @@
 
         // API BMKG
         async function fetchWeather(villageId) {
-            if(!villageId) return;
-            
+            if (!villageId) return;
+
             // Format ID untuk BMKG (biasanya butuh titik pemisah)
             // Contoh emsifa: 3201010001 -> BMKG: 32.01.01.0001
             const formattedId = villageId.match(/.{1,2}/g).join('.');
@@ -201,7 +283,7 @@
                 document.getElementById('wWind').innerText = current.ws;
                 document.getElementById('wCloud').innerText = `${current.tcc}%`;
                 document.getElementById('wVis').innerText = current.vs_text;
-                document.getElementById('wTimeLabel').innerText = current.local_datetime.split(' ')[1].substring(0,5);
+                document.getElementById('wTimeLabel').innerText = current.local_datetime.split(' ')[1].substring(0, 5);
                 document.getElementById('wIconContainer').innerHTML = `<img src="${current.image}" class="w-40 h-40 float-img">`;
 
             } catch (err) {
@@ -215,4 +297,5 @@
         window.onload = loadProvinces;
     </script>
 </body>
+
 </html>
