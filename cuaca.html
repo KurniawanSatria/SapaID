@@ -206,7 +206,7 @@
                 btn.classList.remove('animate-pulse');
             }
         }
-        const REGION_API = 'https://api.cors.lol/?url=https://api-wilayah-indonesia/api';
+        const REGION_API = 'https://proxy.corsfix.com/?https://wilayah.id/api';
 
         function updateClock() {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -218,7 +218,7 @@
             const res = await fetch(`${REGION_API}/provinces.json`);
             const data = await res.json();
             const el = document.getElementById('prov');
-            data.forEach(p => el.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+            data.data.forEach(p => el.innerHTML += `<option value="${p.code}">${p.name}</option>`);
         }
 
         async function loadRegencies(id) {
@@ -226,7 +226,7 @@
             if (!id) return;
             const res = await fetch(`${REGION_API}/regencies/${id}.json`);
             const data = await res.json();
-            fill('kota', data);
+            fill('kota', data.data);
         }
 
         async function loadDistricts(id) {
@@ -234,7 +234,7 @@
             if (!id) return;
             const res = await fetch(`${REGION_API}/districts/${id}.json`);
             const data = await res.json();
-            fill('kec', data);
+            fill('kec', data.data);
         }
 
         async function loadVillages(id) {
@@ -242,13 +242,13 @@
             if (!id) return;
             const res = await fetch(`${REGION_API}/villages/${id}.json`);
             const data = await res.json();
-            fill('desa', data);
+            fill('desa', data.data);
         }
 
         function fill(id, data) {
             const el = document.getElementById(id);
             el.disabled = false;
-            data.forEach(item => el.innerHTML += `<option value="${item.id}">${item.name}</option>`);
+            data.forEach(item => el.innerHTML += `<option value="${item.code}">${item.name}</option>`);
         }
 
         function reset(ids) {
