@@ -209,63 +209,94 @@
         const REGION_API = 'https://proxy.corsfix.com/?https://wilayah.id/api';
 
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const clockEl = document.getElementById('clock');
+            if (clockEl) clockEl.innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
         setInterval(updateClock, 1000);
 
-        // API Wilayah
+        // --- LOGIKA API WILAYAH (FIXED FOR WILAYAH.ID) ---
+
         async function loadProvinces() {
-            const res = await fetch(`${REGION_API}/provinces.json`);
-            const data = await res.json();
-            const el = document.getElementById('prov');
-            data.data.forEach(p => el.innerHTML += `<option value="${p.code}">${p.name}</option>`);
+            try {
+                const res = await fetch(`${REGION_API}/provinces.json`);
+                const json = await res.json();
+                // Wilayah.id menyimpan array di json.data
+                fill('prov', json.data);
+            } catch (err) {
+                console.error("Gagal muat provinsi:", err);
+            }
         }
 
         async function loadRegencies(id) {
             reset(['kota', 'kec', 'desa']);
             if (!id) return;
-            const res = await fetch(`${REGION_API}/regencies/${id}.json`);
-            const data = await res.json();
-            fill('kota', data.data);
+            try {
+                const res = await fetch(`${REGION_API}/regencies/${id}.json`);
+                const json = await res.json();
+                fill('kota', json.data);
+            } catch (err) {
+                console.error("Gagal muat kota:", err);
+            }
         }
 
         async function loadDistricts(id) {
             reset(['kec', 'desa']);
             if (!id) return;
-            const res = await fetch(`${REGION_API}/districts/${id}.json`);
-            const data = await res.json();
-            fill('kec', data.data);
+            try {
+                const res = await fetch(`${REGION_API}/districts/${id}.json`);
+                const json = await res.json();
+                fill('kec', json.data);
+            } catch (err) {
+                console.error("Gagal muat kecamatan:", err);
+            }
         }
 
         async function loadVillages(id) {
             reset(['desa']);
             if (!id) return;
-            const res = await fetch(`${REGION_API}/villages/${id}.json`);
-            const data = await res.json();
-            fill('desa', data.data);
+            try {
+                const res = await fetch(`${REGION_API}/villages/${id}.json`);
+                const json = await res.json();
+                fill('desa', json.data);
+            } catch (err) {
+                console.error("Gagal muat desa:", err);
+            }
         }
 
-        function fill(id, data) {
+        function fill(id, dataArray) {
             const el = document.getElementById(id);
+            if (!el) return;
+
             el.disabled = false;
-            data.forEach(item => el.innerHTML += `<option value="${item.code}">${item.name}</option>`);
+            // Pastikan dataArray adalah array sebelum melakukan loop
+            if (Array.isArray(dataArray)) {
+                dataArray.forEach(item => {
+                    const option = document.createElement('option');
+                    // Wilayah.id menggunakan 'code' bukan 'id'
+                    option.value = item.code;
+                    option.text = item.name;
+                    el.appendChild(option);
+                });
+            }
         }
 
         function reset(ids) {
             ids.forEach(id => {
                 const el = document.getElementById(id);
-                el.innerHTML = `<option value="">${id.toUpperCase()}</option>`;
-                el.disabled = true;
+                if (el) {
+                    el.innerHTML = `<option value="">${id.toUpperCase()}</option>`;
+                    el.disabled = true;
+                }
             });
         }
 
-        // API BMKG
-        async function fetchWeather(villageId) {
-            if (!villageId) return;
+        // --- LOGIKA BMKG ---
+        async function fetchWeather(villageCode) {
+            if (!villageCode) return;
 
-            // Format ID untuk BMKG (biasanya butuh titik pemisah)
-            // Contoh emsifa: 3201010001 -> BMKG: 32.01.01.0001
-            const formattedId = villageId.match(/.{1,2}/g).join('.');
+            // Wilayah.id code biasanya sudah pakai titik (misal: 11.01.01.2001)
+            // Jika belum ada titik, fungsi di bawah akan menambahkannya
+            const formattedId = villageCode.includes('.') ? villageCode : villageCode.match(/.{1,2}/g).join('.');
 
             document.getElementById('weatherContent').classList.add('hidden');
             document.getElementById('loader').classList.remove('hidden');
@@ -273,6 +304,9 @@
             try {
                 const res = await fetch(`https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=${formattedId}`);
                 const json = await res.json();
+
+                if (!json.data || json.data.length === 0) throw new Error("Data BMKG tidak ditemukan");
+
                 const data = json.data[0];
                 const current = data.cuaca[0][0];
 
@@ -282,12 +316,13 @@
                 document.getElementById('wHumid').innerText = `${current.hu}%`;
                 document.getElementById('wWind').innerText = current.ws;
                 document.getElementById('wCloud').innerText = `${current.tcc}%`;
-                document.getElementById('wVis').innerText = current.vs_text;
+                document.getElementById('wVis').innerText = current.vs_text || "--";
                 document.getElementById('wTimeLabel').innerText = current.local_datetime.split(' ')[1].substring(0, 5);
                 document.getElementById('wIconContainer').innerHTML = `<img src="${current.image}" class="w-40 h-40 float-img">`;
 
             } catch (err) {
-                alert("Data wilayah ini belum tersedia di server BMKG.");
+                console.error(err);
+                alert("Maaf, data cuaca untuk lokasi ini belum tersedia di server BMKG.");
             } finally {
                 document.getElementById('weatherContent').classList.remove('hidden');
                 document.getElementById('loader').classList.add('hidden');
